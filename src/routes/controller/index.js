@@ -4,15 +4,37 @@ const utils = require('../../modules/utils');
 const axios = require('axios');
 const FormData = require('form-data');
 const db_externa = require('../../modules/db/db_externa');
+const { DatabaseFactory } = require('../../modules/db/db_oracle');
 const cron = require('node-cron');
 
-// Programar la tarea cada 5 minutos
-cron.schedule('*/5 * * * *', () => {
-    console.log("Buscando documentos pendientes...");
-    envio_documentos();
-});
+// Ejemplo de uso
+(async () => {
+    const config = {
+        user: process.env.DB_USER_ORACLE,
+        password: process.env.DB_PASS_ORACLE,
+        host: process.env.DB_HOST_ORACLE,
+        port: process.env.DB_PORT_ORACLE,
+        database: process.env.DB_NAME_ORACLE
+    };
 
-envio_documentos();
+    try {
+        const pool = await DatabaseFactory.connect(config);
+        console.log('Conexión exitosa');
+
+        // Cerrar la conexión
+        await pool.close();
+    } catch (error) {
+        console.error('Error en la conexión:', error);
+    }
+})();
+
+// Programar la tarea cada 5 minutos
+//cron.schedule('*/5 * * * *', () => {
+//    console.log("Buscando documentos pendientes...");
+//    envio_documentos();
+//});
+//
+//envio_documentos();
 
 async function envio_documentos() {
 
