@@ -15,6 +15,7 @@ const userRouter = require('./routes/users/index')
 const controllerRouter = require('./routes/controller/index')
 const certificadosRouter = require('./routes/certificados/index')
 const empresasRouter = require('./routes/empresas/index')
+const expedientesRouter = require('./routes/expedientes/index')
 
 const app = express();
 
@@ -71,6 +72,7 @@ app.use('/users', userRouter)
 app.use('/controller', controllerRouter)
 app.use('/certificados', certificadosRouter)
 app.use('/empresas', empresasRouter)
+app.use('/expedientes', expedientesRouter)
 
 app.use((req, res, next) => {
     res.set('Cache-Control', 'public, max-age=3600'); // 1 hora
