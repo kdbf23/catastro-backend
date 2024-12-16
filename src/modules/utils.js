@@ -3,6 +3,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const moment = require('moment-timezone');
 const axios = require('axios')
+const QRCode = require('qrcode');
+
+async function generateQRCode(data) {
+    return await QRCode.toBuffer(data, { type: 'png' });
+}
 
 async function descarga_documento(id_solicitud) {
     try {
@@ -271,6 +276,7 @@ async function sendMail(bodyParameters) {
 }
 
 module.exports = {
+    generateQRCode,
     descarga_documento,
     currentDate,
     sp_controller,

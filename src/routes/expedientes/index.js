@@ -2,6 +2,7 @@ let express = require('express');
 let router = express.Router();
 const PDFDocument = require('pdfkit');
 const fs = require('fs');
+const utils = require('../../modules/utils');
 
 router.post('/generar-pdf', async (req, res, next) => {
 
@@ -228,11 +229,12 @@ router.post('/generar-pdf', async (req, res, next) => {
         doc.font('Helvetica')
             .text(expedienteData.observaciones, startX + 5, startY4 + 15, { align: 'left', width: 500 });
 
+        const qrCodeImage = await utils.generateQRCode('https://ekuatia.set.gov.py/consultas-test/qr?nVersion=150&Id=01800806107001001720016222024121118127057483&dFeEmiDE=323032342d31322d31315431323a30313a3139&dRucRec=80090581&dTotGralOpe=500000&dTotIVA=45454.54545455&cItems=1&DigestValue=6b54774a457a55477649313658327278526651504f4a6b565758734832396a6a4b35427431303755366e493d&IdCSC=0001&cHashQR=db43d8b9fb4712c7f23a162518dbf2d5555f8d76fe2a9d949927cf29d18e9989');
+        doc.image(qrCodeImage, startX + 5, startY4 + 80, { width: 120 });
+
         doc.font('Helvetica-Bold').text('El presente servicio ha sido aprobado por las Resoluciones M. H. N° 207/2018, SNC N° 401/2018 y SNC N°57/2018. Es expedido teniendo en cuenta la utilidad establecida en el artículo 64 de la Ley 125/91. Así mismo, su contenido tiene carácter declarativo.', startX + 5, startY4 + 210, { align: 'left', width: 550 });
         // Finalizar el documento
         doc.end();
-
-        console.log(`PDF generado exitosamente en ${outputPath}`);
 
         // Esperar a que el stream termine
         stream.on('finish', () => {
