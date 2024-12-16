@@ -7,32 +7,7 @@ router.post('/generar-pdf', async (req, res, next) => {
 
     try {
 
-        let expedienteData = {
-            formularioNro: "1234",
-            expedienteNro: "123456",
-            anio: "2024",
-            certificadoNro: "98765",
-            departamento: "Central",
-            distrito: "San Lorenzo",
-            lugar: "Zona Norte",
-            lote: "12",
-            manzana: "B",
-            fincaMatricula: "456789",
-            nomenclaturaCatastral: "001-002-003",
-            superficie: "1000 m²",
-            evaluacionFiscal: "500,000,000 Gs.",
-            titular: "Juan Pérez González",
-            cji: "0012345678",
-            medidasLineales: [
-                { lado: "Frente W", mide: "406", mts: "60", cm: "", extra: "Linda con Ruta Nacional PY22" },
-                { lado: "Lado S", mide: "369", mts: "63", cm: "", extra: "Linda con Lote N.º 6" },
-                { lado: "Lado E", mide: "300", mts: "", cm: "", extra: "Linda con campo abierto" },
-                { lado: "Lado N", mide: "250", mts: "", cm: "", extra: "Linda con propiedad privada" },
-                { lado: "Lado", mide: "", mts: "", cm: "", extra: "Linda con" },
-                { lado: "Lado", mide: "", mts: "", cm: "", extra: "Linda con" },
-            ],
-            observaciones: "Sin observaciones técnicas o jurídicas."
-        }
+        let expedienteData = req.body
 
         // Crear el documento PDF
         const doc = new PDFDocument({ margin: 30 });
@@ -259,7 +234,13 @@ router.post('/generar-pdf', async (req, res, next) => {
 
         console.log(`PDF generado exitosamente en ${outputPath}`);
 
-        return res.download(outputPath);
+        res.download(outputPath, (err) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).send('Error al descargar el PDF');
+            }
+            fs.unlinkSync(outputPath); // Eliminar el archivo temporal
+        });
 
     } catch (error) {
         console.log(error)
