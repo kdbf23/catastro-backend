@@ -234,12 +234,27 @@ router.post('/generar-pdf', async (req, res, next) => {
 
         console.log(`PDF generado exitosamente en ${outputPath}`);
 
-        res.download(outputPath, (err) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).send('Error al descargar el PDF');
-            }
-            fs.unlinkSync(outputPath); // Eliminar el archivo temporal
+        // Esperar a que el stream termine
+        stream.on('finish', () => {
+            console.log(`PDF generado exitosamente en ${outputPath}`);
+
+            // Descargar el PDF
+            res.download(outputPath, 'Certificado_Catastral.pdf', (err) => {
+                if (err) {
+                    console.error('Error al descargar el PDF:', err);
+                    return res.status(500).send('Error al descargar el PDF');
+                }
+
+                console.log('PDF descargado exitosamente');
+                fs.unlinkSync(outputPath); // Eliminar el archivo temporal después de la descarga
+                console.log('Archivo temporal eliminado');
+            });
+        });
+
+        // Manejar errores durante la escritura del archivo
+        stream.on('error', (err) => {
+            console.error('Error al escribir el PDF:', err);
+            res.status(500).send('Error al generar el PDF');
         });
 
     } catch (error) {
